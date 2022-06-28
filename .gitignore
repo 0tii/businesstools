@@ -1,0 +1,7 @@
+# BT-API
+# © 2022 - 2022 Daniel H. Rauhut
+# Proprietary
+
+node_modules/
+package-lock.json
+build/
