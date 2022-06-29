@@ -33,16 +33,16 @@ class Authentication {
         const key: string = req.get('API-Key') || '';
         if (!key) resolver.error('Unauthorized - no \'API-Key\' Header.', 401, res);
 
-        //try to fetch dataset from database
+        //try to fetch dataset from databasse
         const row: RowDataPacket[] = await this._getKeyDataset(this._apiKeyHash(key));
 
         if (row && row.length > 0) {
             //separate condition for transparent error response
             if(this._keyExpired(row[0].valid_until)){
                 resolver.error(`Unauthorized - API key expired on ${formatDate(new Date(row[0].valid_until), 'dd-MM-yyyy')}. Please renew your subscription.`, 401, res);
+            }else{
+                next();
             }
-            //! Here we have a valid and not expired key
-            //! add scope as header
         } else {
             resolver.error('Unauthorized - invalid API Key.', 401, res);
         }
@@ -52,7 +52,6 @@ class Authentication {
      * Query a key from the database.
      * @param key sha256 hash of the key to query
      * @returns the dataset corresponding to the key or an empty dataset
-     * TODO: join query to also get scopes
      */
     async _getKeyDataset(key: string): Promise<RowDataPacket[]> {
         const [row] = await pool.query<RowDataPacket[]>('SELECT * FROM api_keys WHERE `key` = ?', [key]);
