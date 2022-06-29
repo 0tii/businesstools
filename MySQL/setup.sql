@@ -5,8 +5,10 @@ Setup script for BusinessTools API backend
 CREATE DATABASE IF NOT EXISTS bt;
 USE bt;
 
+DROP TABLE IF EXISTS key_scopes;
 DROP TABLE IF EXISTS api_keys;
 DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS scopes;
 
 CREATE TABLE IF NOT EXISTS users (
     `uid` INT UNIQUE AUTO_INCREMENT PRIMARY KEY,
@@ -20,7 +22,8 @@ CREATE TABLE IF NOT EXISTS users (
 CREATE INDEX IF NOT EXISTS idx_email ON users (email);
 
 CREATE TABLE IF NOT EXISTS api_keys (
-    `key` CHAR(100) PRIMARY KEY, /*encrypted*/
+    `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `key` VarChar(64), /*SHA256 hashed*/
     `uid` INT NOT NULL,
     `valid_until` DATETIME,
     `created` DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -30,7 +33,31 @@ CREATE TABLE IF NOT EXISTS api_keys (
 );
 CREATE INDEX IF NOT EXISTS idx_key ON api_keys (`key`);
 
-/* Sample data */
-INSERT INTO users(`email`, `password`) VALUES('daniel@rauhut.me', 'thiswillbeencryptedeventually');
+/* API scopes */
+CREATE TABLE IF NOT EXISTS scopes (
+    `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `name` VarChar(32) NOT NULL UNIQUE 
+);
 
-INSERT INTO api_keys(`key`, `uid`) VALUES('MjFPxkzqF7xcnhj2cM0V3O3yhHqGpNSGCsfJF1DYm3o=', 1);
+/* API Keys and scopes */
+CREATE TABLE IF NOT EXISTS key_scopes (
+    `user_id` INT NOT NULL,
+    `key_id` INT NOT NULL,
+    `scope_id` INT NOT NULL,
+    FOREIGN KEY (`key_id`) REFERENCES api_keys (`id`),
+    FOREIGN KEY (`scope_id`) REFERENCES scopes (`id`)
+);
+CREATE INDEX idx_scope_userid ON key_scopes (`user_id`);
+
+/* Sample data */
+INSERT INTO users(`email`, `password`) VALUES('daniel@rauhut.me', 'hashed-salted-and-peppered'); --id: 1
+
+INSERT INTO api_keys(`key`, `uid`) VALUES('MjFPxkzqF7xcnhj2cM0V3O3yhHqGpNSGCsfJF1DYm3o=', 1); --id: 1 / key: samplekeysamplekey
+
+/* Sample scopes */
+INSERT INTO scopes(`name`) VALUES('api.pdf.basic'); --id: 1
+INSERT INTO scopes(`name`) VALUES('api.pdf.full'); --id: 2
+INSERT INTO scopes(`name`) VALUES('api.accounting'); --id: 3
+
+/* Assign scopes to user keys */
+INSERT INTO key_scopes(`user_id`, `key_id`, `scope_id`) VALUES(1, 1, 1);

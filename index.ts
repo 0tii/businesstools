@@ -22,9 +22,10 @@ import auth from './src/middleware/auth/authenticate';
 const server = express();
 
 //middleware
+server.use(auth.key);
 server.use(bodyParser.urlencoded({ extended: false }));
 server.use(bodyParser.json());
-server.use(auth.key);
+
 
 //route controllers
 

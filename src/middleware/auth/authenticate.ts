@@ -14,6 +14,7 @@ import { RowDataPacket } from 'mysql2';
 import pool from '../../db/mysql';
 import resolver from '../../resolver/resolver';
 import crypto from 'crypto';
+import { formatDate } from '../../util/date/DateUtility';
 
 /**
  * Express middleware for bt key-authentication. Use the `.key()` function to verify keys.
@@ -23,7 +24,7 @@ import crypto from 'crypto';
  */
 class Authentication {
     /**
-     * Authenticates request by API-Key against the database.
+     * Authenticates request by API-Key against the database. Rejects all unauthorized requests.
      * @param req 
      * @param res 
      * @param next 
@@ -36,9 +37,12 @@ class Authentication {
         const row: RowDataPacket[] = await this._getKeyDataset(this._apiKeyHash(key));
 
         if (row && row.length > 0) {
-            //! here we have an existing key
-            //! -- expired?
-
+            //separate condition for transparent error response
+            if(this._keyExpired(row[0].valid_until)){
+                resolver.error(`Unauthorized - API key expired on ${formatDate(new Date(row[0].valid_until), 'dd-MM-yyyy')}. Please renew your subscription.`, 401, res);
+            }
+            //! Here we have a valid and not expired key
+            //! add scope as header
         } else {
             resolver.error('Unauthorized - invalid API Key.', 401, res);
         }
@@ -48,6 +52,7 @@ class Authentication {
      * Query a key from the database.
      * @param key sha256 hash of the key to query
      * @returns the dataset corresponding to the key or an empty dataset
+     * TODO: join query to also get scopes
      */
     async _getKeyDataset(key: string): Promise<RowDataPacket[]> {
         const [row] = await pool.query<RowDataPacket[]>('SELECT * FROM api_keys WHERE `key` = ?', [key]);
