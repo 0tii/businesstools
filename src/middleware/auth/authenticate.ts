@@ -14,7 +14,7 @@ import { RowDataPacket } from 'mysql2';
 import pool from '../../db/mysql';
 import resolver from '../../resolver/resolver';
 import crypto from 'crypto';
-import { formatDate } from '../../util/date/DateUtility';
+import { formatDate } from '../../../lib/util/date/DateUtility';
 
 /**
  * Express middleware for bt key-authentication. Use the `.key()` function to verify keys.
