@@ -52,7 +52,8 @@ CREATE INDEX idx_scope_userid ON key_scopes (`user_id`);
 /* Sample data */
 INSERT INTO users(`email`, `password`) VALUES('daniel@rauhut.me', 'hashed-salted-and-peppered'); --id: 1
 
-INSERT INTO api_keys(`key`, `uid`) VALUES('MjFPxkzqF7xcnhj2cM0V3O3yhHqGpNSGCsfJF1DYm3o=', 1); --id: 1 / key: samplekeysamplekey
+INSERT INTO api_keys(`key`, `uid`, `valid_until`) VALUES('32314fc64cea17bc5c9e18f670cd15dcedf2847a86a4d4860ac7c91750d89b7a', 1, '2023-01-01 00:00:00'); --id: 1 / key: samplekeysamplekey
+INSERT INTO api_keys(`key`, `uid`, `valid_until`) VALUES('ccdf94091ae1b30ca68db5f08d86b2594dfc8c4cb5f2f834e772aeffcd7c4ba2', 1, '2022-01-01 00:00:00'); --id: 1 / key: samplekeysamplekey
 
 /* Sample scopes */
 INSERT INTO scopes(`name`) VALUES('api.pdf.basic'); --id: 1

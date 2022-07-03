@@ -8,15 +8,16 @@
  * @returns formatted string
  */
 export function formatDate(date: Date, format: DateFormats, divider: string = '.'): string {
-    switch(format){
+    //dont forget date.getMonth() is 0-indexed
+    switch (format) {
         case "dd-MM-yyyy":
-            return `${date.getDay}${divider}${date.getMonth}${divider}${date.getFullYear}`;
+            return `${date.getDate() < 10 ? '0' + date.getDate() : date.getDate()}${divider}${date.getMonth() < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1}${divider}${date.getFullYear()}`;
         case "MM-dd-yyyy":
-            return `${date.getMonth}${divider}${date.getDay}${divider}${date.getFullYear}`;
+            return `${date.getMonth() < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1}${divider}${date.getDate() < 10 ? '0' + date.getDate() : date.getDate()}${divider}${date.getFullYear()}`;
         case 'yyyy-MM-dd':
-            return `${date.getFullYear}${divider}${date.getMonth}${divider}${date.getDay}`;
+            return `${date.getFullYear()}${divider}${date.getMonth() < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1}${divider}${date.getDate() < 10 ? '0' + date.getDate() : date.getDate()}`;
         case 'sortable':
-            return `${date.getFullYear}${date.getMonth}${date.getDay}${date.getHours}${date.getMinutes}${date.getSeconds}`;
+            return `${date.getFullYear()}${date.getMonth() + 1}${date.getDate()}${date.getHours()}${date.getMinutes()}${date.getSeconds()}`;
     }
 }
 

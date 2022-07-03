@@ -10,31 +10,28 @@
  * Copyright 2022 - 2022 Daniel H. Rauhut, Rite Software
  */
 
-/*
-TODO: OCR [npm i tesseract]
-*/
 import express from "express";
-import bodyParser from "body-parser";
 import https from 'https';
 import cfg from './cfg/config';
 import auth from './src/middleware/auth/authenticate';
 
-const server = express();
+import pdfRouter from "./src/controller/pdf/pdf.router";
+
+const app = express();
 
 //middleware
-server.use(auth.key);
-server.use(bodyParser.urlencoded({ extended: false }));
-server.use(bodyParser.json());
+app.use(auth.key);
+app.use(express.json({limit: "10mb"})); //TODO custom limits per task
 
-
-//route controllers
+//routes
+app.use(pdfRouter);
 
 //listen
 https.createServer(
     {
-
+        //certs
     },
-    server
+    app
 ).listen(
     cfg.httpsPort,
     () => {
@@ -42,7 +39,7 @@ https.createServer(
     }
 );
 
-server.listen(
+app.listen(
     cfg.httpPort,
     () => {
         console.log(`[http server] listening on port ${cfg.httpPort}.`);

@@ -17,7 +17,7 @@ import crypto from 'crypto';
 import { formatDate } from '../../../lib/util/date/DateUtility';
 
 /**
- * Express middleware for bt key-authentication. Use the `.key()` function to verify keys.
+ * Express middleware for bt key-authentication. Use the `key()` function to verify keys.
  * Keys have to be sent as `API-Key` request header.
  * 
  * Requires the database to be set up according to `/MySQL/setup.sql` and running.
@@ -29,16 +29,16 @@ class Authentication {
      * @param res 
      * @param next 
      */
-    async key(req: express.Request, res: express.Response, next: express.NextFunction): Promise<void> {
+    public key = async (req: express.Request, res: express.Response, next: express.NextFunction): Promise<void> => {
         const key: string = req.get('API-Key') || '';
         if (!key) resolver.error('Unauthorized - no \'API-Key\' Header.', 401, res);
 
         //try to fetch dataset from databasse
-        const row: RowDataPacket[] = await this._getKeyDataset(this._apiKeyHash(key));
+        const row: RowDataPacket[] = await this.getKeyDataset(this.apiKeyHash(key));
 
         if (row && row.length > 0) {
             //separate condition for transparent error response
-            if(this._keyExpired(row[0].valid_until)){
+            if(this.keyExpired(row[0].valid_until)){
                 resolver.error(`Unauthorized - API key expired on ${formatDate(new Date(row[0].valid_until), 'dd-MM-yyyy')}. Please renew your subscription.`, 401, res);
             }else{
                 next();
@@ -53,18 +53,19 @@ class Authentication {
      * @param key sha256 hash of the key to query
      * @returns the dataset corresponding to the key or an empty dataset
      */
-    async _getKeyDataset(key: string): Promise<RowDataPacket[]> {
+     private async getKeyDataset(key: string): Promise<RowDataPacket[]> {
         const [row] = await pool.query<RowDataPacket[]>('SELECT * FROM api_keys WHERE `key` = ?', [key]);
         return row;
     }
 
     /**
      * 
+     * 
      * @param str string to hash
-     * @returns sha256 hash of `str`
+     * @returns sha256 hash of `str` [encoded in b64] (tbd)
      */
-    _apiKeyHash(str: string): string {
-        return crypto.createHash('sha256').update(str).digest().toString('base64');
+    private apiKeyHash(str: string): string {
+        return crypto.createHash('sha256').update(str).digest().toString('hex');
     }
 
     /**
@@ -72,7 +73,7 @@ class Authentication {
      * @param date the expiry date of the key
      * @returns `true` if the key is expired, false if valid
      */
-    _keyExpired(date: string): boolean {
+    private keyExpired(date: string): boolean {
         return new Date(date) < new Date();
     }
 }
