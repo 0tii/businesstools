@@ -13,6 +13,7 @@
 import express from "express";
 import https from 'https';
 import cfg from './cfg/config';
+import logger from "./lib/logger";
 import auth from './src/middleware/auth/authenticate';
 
 import pdfRouter from "./src/controller/pdf/pdf.router";
@@ -35,13 +36,14 @@ https.createServer(
 ).listen(
     cfg.httpsPort,
     () => {
-        console.log(`[https server] listening on port ${cfg.httpsPort}.`);
+        logger.info(`[https server] listening on port ${cfg.httpsPort}.`);
     }
 );
 
 app.listen(
     cfg.httpPort,
     () => {
-        console.log(`[http server] listening on port ${cfg.httpPort}.`);
+        logger.info(`[http server] listening on port ${cfg.httpPort}.\nPress Ctrl + C to exit.`);
     }
 );
+

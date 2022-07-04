@@ -17,7 +17,7 @@ export function formatDate(date: Date, format: DateFormats, divider: string = '.
         case 'yyyy-MM-dd':
             return `${date.getFullYear()}${divider}${date.getMonth() < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1}${divider}${date.getDate() < 10 ? '0' + date.getDate() : date.getDate()}`;
         case 'sortable':
-            return `${date.getFullYear()}${date.getMonth() + 1}${date.getDate()}${date.getHours()}${date.getMinutes()}${date.getSeconds()}`;
+            return `${date.getFullYear()}${date.getMonth() < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1}${date.getDate() < 10 ? '0' + date.getDate() : date.getDate()}${date.getHours() < 10 ? '0' + date.getHours() : date.getHours()}${date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes()}${date.getSeconds() < 10 ? '0' + date.getSeconds() : date.getSeconds()}`;
     }
 }
 

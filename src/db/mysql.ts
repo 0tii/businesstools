@@ -23,6 +23,6 @@ const pool = mysql.createPool({
     }
 );
 
-const promise = pool.promise();
+const asyncPool = pool.promise();
 
-export default promise;
+export default asyncPool;

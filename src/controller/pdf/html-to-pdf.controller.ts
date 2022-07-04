@@ -14,7 +14,7 @@ import * as htmlPdf from 'better-html-pdf';
 import resolver from '../../resolver/resolver';
 
 export async function handleHtmlToPdf(req: express.Request, res: express.Response, next: express.NextFunction){
-    const html: string = req.body.html;
+    const html: string = req.body.html || '';
     const options: htmlPdf.PdfOptions = req.body.options || {};
 
     if(!html && !options.path) resolver.error('No conversion target given. Provide either html or options.url  parameters.', 422, res);
