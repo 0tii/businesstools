@@ -24,7 +24,7 @@ const app = express();
 //middleware
 app.use(auth.authenticator);
 app.use(bodyParser.json())
-app.use(bodyParser.urlencoded({extended: true})); //TODO custom limits per task
+app.use(bodyParser.urlencoded({extended: true}));
 
 //routes
 app.use(pdfRouter);

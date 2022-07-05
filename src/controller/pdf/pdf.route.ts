@@ -11,8 +11,11 @@
  */
 
 import express from "express";
-import { handleHtmlToPdf } from "./html-to-pdf.controller";
+import HtmlToPdfController from "./html-to-pdf.controller";
 
 export const pdfRoute = express.Router();
 
-pdfRoute.post('/html-to-pdf', handleHtmlToPdf);
+//initialize controllers
+const htmlToPdf = new HtmlToPdfController('/html-to-pdf', 'api.pdf.full');
+
+pdfRoute.post(htmlToPdf.endpoint, htmlToPdf.receive);

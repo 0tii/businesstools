@@ -52,7 +52,7 @@ class Authentication {
             const scopes: string[] = row.map((row) => row.scope_name);
 
             if(!scopes || scopes.length < 1){
-                return resolver.error('Unauthorized - Your API key is not assigned any permissions.', 401, res)
+                return resolver.error('Unauthorized - Your API key is not assigned any permissions.', 401, res);
             }
 
             //attach user scopes to header and continue

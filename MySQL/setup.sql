@@ -63,11 +63,4 @@ INSERT INTO scopes(`scope_name`) VALUES('api.accounting'); --id: 3
 /* Assign scopes to user keys */
 INSERT INTO key_scopes(`user_id`, `key_id`, `scope_id`) VALUES(1, 1, 1);
 INSERT INTO key_scopes(`user_id`, `key_id`, `scope_id`) VALUES(1, 1, 2);
-
-SELECT k.valid_until, sc.scope_name FROM
-api_keys AS k
-INNER JOIN key_scopes AS ks
-ON k.id = ks.user_id
-INNER JOIN scopes AS sc
-ON ks.scope_id = sc.id
-WHERE k.key = '32314fc64cea17bc5c9e18f670cd15dcedf2847a86a4d4860ac7c91750d89b7a';
+INSERT INTO key_scopes(`user_id`, `key_id`, `scope_id`) VALUES(1, 1, 3);

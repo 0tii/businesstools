@@ -11,7 +11,7 @@
  */
 
 import express from "express";
-import { pdfRoute } from './pdf.controller';
+import { pdfRoute } from './pdf.route';
 
 const app = express();
 
