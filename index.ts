@@ -15,14 +15,16 @@ import https from 'https';
 import cfg from './cfg/config';
 import logger from "./lib/logger";
 import auth from './src/middleware/auth/authenticate';
+import bodyParser from "body-parser";
 
 import pdfRouter from "./src/controller/pdf/pdf.router";
 
 const app = express();
 
 //middleware
-app.use(auth.key);
-app.use(express.json({limit: "10mb"})); //TODO custom limits per task
+app.use(auth.authenticator);
+app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({extended: true})); //TODO custom limits per task
 
 //routes
 app.use(pdfRouter);

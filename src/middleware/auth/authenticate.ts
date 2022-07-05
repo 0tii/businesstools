@@ -24,37 +24,61 @@ import { formatDate } from '../../../lib/util/date/DateUtility';
  */
 class Authentication {
     /**
-     * Authenticates request by API-Key against the database. Rejects all unauthorized requests.
+     * Authenticates request by API-Key against the database. 
+     * Rejects all unauthorized requests and attaches (or overwrites if exists) a header ``userScopes`` including all scopes assigned to the respective key. (//TODO)
+     * Checks file size limit
      * @param req 
      * @param res 
      * @param next 
      */
-    public key = async (req: express.Request, res: express.Response, next: express.NextFunction): Promise<void> => {
+    public authenticator = async (req: express.Request, res: express.Response, next: express.NextFunction): Promise<void> => {
         const key: string = req.get('API-Key') || '';
         if (!key) resolver.error('Unauthorized - no \'API-Key\' Header.', 401, res);
 
         //try to fetch dataset from databasse
-        const row: RowDataPacket[] = await this.getKeyDataset(this.apiKeyHash(key));
+        var row: RowDataPacket[] = [];
+        try{
+            row = await this.getKeyData(this.apiKeyHash(key));
+        }catch{
+            resolver.error('Server error while validating api key', 501, res);
+        }
 
         if (row && row.length > 0) {
-            //separate condition for transparent error response
-            if(this.keyExpired(row[0].valid_until)){
-                resolver.error(`Unauthorized - API key expired on ${formatDate(new Date(row[0].valid_until), 'dd-MM-yyyy')}. Please renew your subscription.`, 401, res);
-            }else{
-                next();
+            if (this.keyExpired(row[0].valid_until)) {
+                return resolver.error(`Unauthorized - API key expired on ${formatDate(new Date(row[0].valid_until), 'dd-MM-yyyy')}. Please renew your subscription.`, 401, res);
             }
+
+            //scopes to array
+            const scopes: string[] = row.map((row) => row.scope_name);
+
+            if(!scopes || scopes.length < 1){
+                return resolver.error('Unauthorized - Your API key is not assigned any permissions.', 401, res)
+            }
+
+            //attach user scopes to header and continue
+            req.headers['user-scopes'] = scopes;
+
+            next();
         } else {
             resolver.error('Unauthorized - invalid API Key.', 401, res);
         }
     }
 
     /**
-     * Query a key from the database.
+     * Query expiry date and scopes for api-key
      * @param key sha256 hash of the key to query
      * @returns the dataset corresponding to the key or an empty dataset
      */
-     private async getKeyDataset(key: string): Promise<RowDataPacket[]> {
-        const [row] = await pool.query<RowDataPacket[]>('SELECT * FROM api_keys WHERE `key` = ?', [key]);
+    private async getKeyData(key: string): Promise<RowDataPacket[]> {
+        const [row] = await pool.query<RowDataPacket[]>(`
+            SELECT k.valid_until, sc.scope_name FROM
+            api_keys AS k
+            INNER JOIN key_scopes AS ks
+            ON k.id = ks.user_id
+            INNER JOIN scopes AS sc
+            ON ks.scope_id = sc.id
+            WHERE k.key = ?;
+        `, [key]);
         return row;
     }
 
