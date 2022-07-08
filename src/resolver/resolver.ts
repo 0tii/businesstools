@@ -13,14 +13,21 @@ import * as express from 'express';
 class ErrorResolver{
     error(msg: string, status: number, res: express.Response): void{
         res.status(status).send({
-            "error": msg
+            "error": msg,
+            "request-id": res.locals['request-id']
         });
     }
 
-    resolve(msg: Object, status: number, res: express.Response): void{
+    resolve(msg: Response, status: number, res: express.Response): void{
+        msg['requestUID'] = res.locals['request-id'];
         res.status(status).send(msg);
     }
 }
+
+interface Response{
+    [key: string]: any;
+}
+
 const resolver = new ErrorResolver();
 
 export default resolver;

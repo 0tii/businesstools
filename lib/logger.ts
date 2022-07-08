@@ -1,5 +1,5 @@
 import { createLogger, transports, format } from "winston";
-import { formatDate } from "./util/date/DateUtility";
+import { formatDate } from "./util/date/date-utility";
 
 const logger = createLogger({
     format: format.combine(

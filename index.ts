@@ -16,13 +16,15 @@ import cfg from './cfg/config';
 import logger from "./lib/logger";
 import auth from './src/middleware/auth/authenticate';
 import bodyParser from "body-parser";
+import helmet from "helmet";
 
 import pdfRouter from "./src/controller/pdf/pdf.router";
 
 const app = express();
+app.disable('x-powered-by');
 
-//middleware
-app.use(auth.authenticator);
+app.use(auth.validate);
+app.use(helmet());
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({extended: true}));
 

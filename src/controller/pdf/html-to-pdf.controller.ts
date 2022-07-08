@@ -13,13 +13,17 @@ import express from 'express';
 import * as htmlPdf from 'better-html-pdf';
 import resolver from '../../resolver/resolver';
 import BaseController from '../base-controller';
+import { ParamsDictionary } from 'express-serve-static-core';
+import { ParsedQs } from 'qs';
+import logger from '../../../lib/logger';
 
 class HtmlToPdfController extends BaseController {
+    
     protected override async execute(req: express.Request, res: express.Response): Promise<void> {
         const html: string = req.body.html || '';
         const options: htmlPdf.PdfOptions = req.body.options || {};
 
-        if (!html && !options.path) resolver.error('No conversion target given. Provide either html or options.url  parameters.', 422, res);
+        if (!html && !options.path) return resolver.error('No conversion target given. Provide either html or options.url  parameters.', 422, res);
 
         //prepare api specific default options
         options['fileType'] = 'base64';
@@ -28,8 +32,13 @@ class HtmlToPdfController extends BaseController {
         try {
             resolver.resolve({ content: await htmlPdf.html2pdf(html, options) }, 200, res);
         } catch (err: any) {
+            logger.error('[HtmlToPdf]'+err.message);
             resolver.error('Conversion error.', 501, res);
         }
+    }
+
+    protected override verifyBody(req: express.Request): void {
+        //can be implemented
     }
 }
 

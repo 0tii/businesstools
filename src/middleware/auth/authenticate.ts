@@ -14,7 +14,7 @@ import { RowDataPacket } from 'mysql2';
 import pool from '../../db/mysql';
 import resolver from '../../resolver/resolver';
 import crypto from 'crypto';
-import { formatDate } from '../../../lib/util/date/DateUtility';
+import { formatDate } from '../../../lib/util/date/date-utility';
 
 /**
  * Express middleware for bt key-authentication. Use the `key()` function to verify keys.
@@ -31,7 +31,7 @@ class Authentication {
      * @param res 
      * @param next 
      */
-    public authenticator = async (req: express.Request, res: express.Response, next: express.NextFunction): Promise<void> => {
+    public validate = async (req: express.Request, res: express.Response, next: express.NextFunction): Promise<void> => {
         const key: string = req.get('API-Key') || '';
         if (!key) resolver.error('Unauthorized - no \'API-Key\' Header.', 401, res);
 
@@ -40,7 +40,7 @@ class Authentication {
         try{
             row = await this.getKeyData(this.apiKeyHash(key));
         }catch{
-            resolver.error('Server error while validating api key', 501, res);
+            return resolver.error('Server error while validating api key', 501, res);
         }
 
         if (row && row.length > 0) {
@@ -55,8 +55,9 @@ class Authentication {
                 return resolver.error('Unauthorized - Your API key is not assigned any permissions.', 401, res);
             }
 
-            //attach user scopes to header and continue
-            req.headers['user-scopes'] = scopes;
+            //attach user scopes to response locals and continue
+            res.locals['user-scopes'] = scopes;
+            res.locals['request-id'] = crypto.randomUUID();
 
             next();
         } else {
