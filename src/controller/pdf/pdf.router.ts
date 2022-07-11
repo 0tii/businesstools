@@ -12,10 +12,11 @@
 
 import express from "express";
 import { pdfRoute } from './pdf.route';
-import limiter from '../../middleware/request-body/request-body';
+import limiter from '../../middleware/body-limiter/body-limiter';
 
 const app = express();
 
+//custom per-scope body size limits
 app.use(limiter({'api.pdf.basic': '2mb', 'api.pdf.full': '10mb'}));
 
 app.use('/pdf', pdfRoute);

@@ -18,7 +18,7 @@ import resolver from '../../resolver/resolver';
  * @returns 
  */
 export default function limitSize(limit: ScopeLimits | string) {
-
+    console.log('Checking file size');
     return function (req: express.Request, res: express.Response, next: express.NextFunction) {//set specific limit if limit is a string
         if (typeof limit === 'string') {
             const limitBytes = interpretLimit(limit) || 100000; //set default 100kb if limit cant be evaluated
@@ -37,7 +37,7 @@ export default function limitSize(limit: ScopeLimits | string) {
                 if (limitBytes > currentLimit) currentLimit = limitBytes;
             }
         }
-
+        console.log(`Request body size is ${req.socket.bytesRead / 1000000}mb and the allowed limit for your subscription is ${currentLimit / 1000000}mb`);
         if (req.socket.bytesRead > currentLimit)
             return resolver.error(`Request body size is ${req.socket.bytesRead / 1000000}mb and exceeds the allowed limit for your subscription (${currentLimit / 1000000}mb)`, 413, res);
         return next();
@@ -51,13 +51,13 @@ export default function limitSize(limit: ScopeLimits | string) {
  */
 function interpretLimit(limit: string): number {
     if (limit.toLowerCase().endsWith('mb')) {
-        return (parseInt(limit.toLowerCase().split('mb')[0]) || 0) * 1000000;
+        return (parseFloat(limit.toLowerCase().split('mb')[0]) || 0) * 1000000;
     }
     if (limit.toLowerCase().endsWith('kb')) {
-        return (parseInt(limit.toLowerCase().split('kb')[0]) || 0) * 1000;
+        return (parseFloat(limit.toLowerCase().split('kb')[0]) || 0) * 1000;
     }
     if (limit.toLowerCase().endsWith('b')) {
-        return parseInt(limit.toLowerCase().split('b')[0]) || 0;
+        return parseFloat(limit.toLowerCase().split('b')[0]) || 0;
     }
     return 0;
 }

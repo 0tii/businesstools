@@ -25,7 +25,7 @@ app.disable('x-powered-by');
 
 app.use(auth.validate);
 app.use(helmet());
-app.use(bodyParser.json())
+app.use(bodyParser.json({limit: '10mb'}));
 app.use(bodyParser.urlencoded({extended: true}));
 
 //routes

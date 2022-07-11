@@ -19,7 +19,7 @@ import { ColorTypes } from "pdf-lib";
 import logger from "../../../lib/logger";
 
 
-class AnnotatePdfController extends BaseController {
+class AddTextPdfController extends BaseController {
 
     protected async execute(req: express.Request, res: express.Response): Promise<void> {
 
@@ -163,4 +163,4 @@ function readPages(pages: string): number[] | undefined {
     }
 }
 
-export default AnnotatePdfController;
+export default AddTextPdfController;

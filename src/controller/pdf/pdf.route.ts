@@ -11,14 +11,14 @@
  */
 
 import express from "express";
-import AnnotatePdfController from "./annotate-pdf.controller";
+import AddTextPdfController from "./add-text-pdf.controller";
 import HtmlToPdfController from "./html-to-pdf.controller";
 
 export const pdfRoute = express.Router();
 
 //initialize controllers
 const htmlToPdf = new HtmlToPdfController('/html-to-pdf', 'api.pdf.full');
-const annotatePdf = new AnnotatePdfController('/annotate-pdf', 'api.pdf.basic');
+const annotatePdf = new AddTextPdfController('/annotate-pdf', 'api.pdf.basic');
 
 //initialize routes with their respective controllers
 pdfRoute.post(htmlToPdf.endpoint, htmlToPdf.receiver);
