@@ -18,13 +18,14 @@ import resolver from '../../resolver/resolver';
 import { interpretNumbers } from '../../../lib/util/interpret/string-interpreter';
 
 /**
+ * Insert one pdf into another pdf at a specified index. Allows to insert either the full PDF file (if insertPages is unspecified) or a certain page / certain pages.
  * Req params:
  * - fileContent [base64 / required] - the main pdf file
  * - insertFileContent [base64 / required] - the file to insert from
  * - insertAt - [number] insert pages at this index (0 = before first page, 1= after first page)
  * - insertPages - [string] - specify a page, range or enumeration of pages from the inserted document as string (1-indexed -> first page == 1)
  */
-class InsertPdfPagesController extends BaseController {
+class InsertPdfController extends BaseController {
     protected verifyBody(req: express.Request): void | Promise<void> {
         if (!req.body.insertAt)
             throw new Error('Required parameter \'insertAfter\' is not provided.');
@@ -50,15 +51,36 @@ class InsertPdfPagesController extends BaseController {
             return resolver.error('Invalid insert file content. The file content provided is not valid base64.', 422, res);
         }
 
-        const insertDocument = await pdflib.PDFDocument.load(insertFileBuffer);
-        const document = await pdflib.PDFDocument.load(fileBuffer);
+        try {
+            var insertDocument = await pdflib.PDFDocument.load(insertFileBuffer);
+            var document = await pdflib.PDFDocument.load(fileBuffer);
+        } catch {
+            return resolver.error('Error reading PDF file content.', 501, res);
+        }
 
-        if(req.body.insertPages !== undefined || req.body.insertPages === -1)
-            var pages: pdflib.PDFPage[] = interpretNumbers(req.body.insertPages).map((num) => insertDocument.getPage(num));
-        else
-            var pages: pdflib.PDFPage[]= insertDocument.getPages();
-        
-        document.insertPage();
+        try {
+
+            var insertAt = req.body.insertAt;
+
+            if (req.body.insertPages !== undefined || req.body.insertPages === -1)
+                var pages: pdflib.PDFPage[] = interpretNumbers(req.body.insertPages).map((num) => insertDocument.getPage(num));
+            else
+                var pages: pdflib.PDFPage[] = insertDocument.getPages();
+
+            for (var i = 0; i < pages.length; i++) {
+                document.insertPage(insertAt, pages[i]);
+                insertAt++;
+            }
+
+            resolver.resolve({
+                fileContent: fileConverter.uInt8ArrayToBase64(await document.save())
+            }, 200, res);
+        } catch {
+            return resolver.error('Error processing your PDF Documents', 501, res);
+        }
+
     }
 
 }
+
+export default InsertPdfController;

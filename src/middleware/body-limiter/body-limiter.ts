@@ -18,7 +18,6 @@ import resolver from '../../resolver/resolver';
  * @returns 
  */
 export default function limitSize(limit: ScopeLimits | string) {
-    console.log('Checking file size');
     return function (req: express.Request, res: express.Response, next: express.NextFunction) {//set specific limit if limit is a string
         if (typeof limit === 'string') {
             const limitBytes = interpretLimit(limit) || 100000; //set default 100kb if limit cant be evaluated
