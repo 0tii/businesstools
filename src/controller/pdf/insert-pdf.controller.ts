@@ -78,9 +78,7 @@ class InsertPdfController extends BaseController {
         } catch {
             return resolver.error('Error processing your PDF Documents', 501, res);
         }
-
     }
-
 }
 
 export default InsertPdfController;
