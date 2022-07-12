@@ -19,6 +19,7 @@ import bodyParser from "body-parser";
 import helmet from "helmet";
 
 import pdfRouter from "./src/controller/pdf/pdf.router";
+import scriptRouter from "./src/controller/script/script.router";
 
 const app = express();
 app.disable('x-powered-by');
@@ -30,6 +31,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 
 //routes
 app.use(pdfRouter);
+app.use(scriptRouter);
 
 //listen
 https.createServer(
