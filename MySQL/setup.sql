@@ -59,8 +59,10 @@ INSERT INTO api_keys(`key`, `uid`, `valid_until`) VALUES('ccdf94091ae1b30ca68db5
 INSERT INTO scopes(`scope_name`) VALUES('api.pdf.basic'); --id: 1
 INSERT INTO scopes(`scope_name`) VALUES('api.pdf.full'); --id: 2
 INSERT INTO scopes(`scope_name`) VALUES('api.accounting'); --id: 3
+INSERT INTO scopes(`scope_name`) VALUES('api.script.basic'); --id: 4
 
 /* Assign scopes to user keys */
 INSERT INTO key_scopes(`user_id`, `key_id`, `scope_id`) VALUES(1, 1, 1);
 INSERT INTO key_scopes(`user_id`, `key_id`, `scope_id`) VALUES(1, 1, 2);
 INSERT INTO key_scopes(`user_id`, `key_id`, `scope_id`) VALUES(1, 1, 3);
+INSERT INTO key_scopes(`user_id`, `key_id`, `scope_id`) VALUES(1, 1, 4);

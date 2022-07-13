@@ -5,10 +5,10 @@ import resolver from '../../resolver/resolver';
 
 class BasicScriptController extends BaseController {
     protected verifyBody(req: express.Request): void {
-
+        console.log(req.params.script);
     }
     protected async execute(req: express.Request, res: express.Response): Promise<void> {
-        const scriptString = req.query.script;
+        const scriptString = req.params.script;
         if (!scriptString || typeof scriptString !== 'string') return resolver.error('Script string parameter is missing or malformed.', 422, res);
 
         try {

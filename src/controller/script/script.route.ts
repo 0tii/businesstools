@@ -12,8 +12,6 @@
 
 import express from "express";
 import BasicScriptController from "./basic-script.controller";
-import app from "./script.router";
-
 
 export const scriptRoute = express.Router();
 
@@ -22,4 +20,4 @@ const basicScriptController = new BasicScriptController('/basic/:script', 'api.s
 
 
 //initialize routes with their respective controllers
-app.get(basicScriptController.endpoint, basicScriptController.receiver);
+scriptRoute.get(basicScriptController.endpoint, basicScriptController.receiver);

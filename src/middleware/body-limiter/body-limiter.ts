@@ -36,7 +36,6 @@ export default function limitSize(limit: ScopeLimits | string) {
                 if (limitBytes > currentLimit) currentLimit = limitBytes;
             }
         }
-        console.log(`Request body size is ${req.socket.bytesRead / 1000000}mb and the allowed limit for your subscription is ${currentLimit / 1000000}mb`);
         if (req.socket.bytesRead > currentLimit)
             return resolver.error(`Request body size is ${req.socket.bytesRead / 1000000}mb and exceeds the allowed limit for your subscription (${currentLimit / 1000000}mb)`, 413, res);
         return next();
