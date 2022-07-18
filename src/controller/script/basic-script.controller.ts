@@ -4,6 +4,11 @@ import { VM } from 'vm2';
 import resolver from '../../resolver/resolver';
 
 class BasicScriptController extends BaseController {
+    private whitelist: string[] = [
+        "charAt", "charCodeAt", "codePointAt", "concat", "endsWith", "fromCharCode", "includes", "indexOf", "lastIndexOf", "length", "localeCompare", "match", "prototype","repeat", "replace", "search", 
+        "slice", "split", "startsWith", "substr", "substring", "toLocaleLowerCase", "toLocaleUpperCase", "toLowerCase", "toUpperCase", "toString", "trim", "valueOf"
+    ]
+
     protected verifyBody(req: express.Request): void {
         console.log(req.params.script);
     }
@@ -28,5 +33,4 @@ class BasicScriptController extends BaseController {
         }
     }
 }
-
 export default BasicScriptController;
